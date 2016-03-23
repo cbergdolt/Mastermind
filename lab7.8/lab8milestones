@@ -1,0 +1,21 @@
+María Inés Aranguren
+March 8-22, 2015
+
+Lab 7/8
+
+Project Milestones
+
+
+GRAPHICS PREPARATION:
+15 pts - Learn SDL graphics with Lazy Foo tutorials
+	 Go through at least 10 of the lessons. Play around with source code to learn how to make basic changes to the programs.
+
+
+SETTING UP PROJECT:
+5 pts  - Make a diagram of overall structure of the project
+
+
+INCORPORATE GRAPHICS:
+15 pts - Incorporate lessons from graphics to create user interface
+5  puts - Create a makefile that will work for graphics with all the flags you can anticipate you will need as of now
+
