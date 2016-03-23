@@ -1,0 +1,62 @@
+Maria Ines Aranguren
+March 22, 2016
+Lab 7/8 Report
+
+Time Log:
+1 Hr in week of March 7th during lab
+1 Hr March 8 - Browsed internet to adapt to project change and met with team
+0.5 Hr over Spring break
+1.5 Hrs March 20 - read about SDL and wored on tutorials
+5 Hrs March 21 - met briefly with Prof Emrich about questions regarding 
+compilation and worked on tutorials 
+Total time: 9 Hrs
+
+
+How my program works:
+Firsly, the program defines mouse clicks and provides some functionality to the 
+texture wrapper class. The render function uses an input of an angle to determine 
+the rotation of the image shown. Then, I included a class to represent a button. 
+This includes a call to handle mouse events. I initially wanted to make it so 
+that the image would move to wherever the mouse was clicked but then decided to 
+make the program so that the image would shift with keyboard presses. Either way, 
+the program needs to handle input events the same way. After these class 
+definitions, there's some lines of code that starts up SDL, loads media, and gets 
+the windows open and also has some checks that will display errors in case that 
+something is wrong. Also in my main, I made a while loop that runs until the user 
+quits the program. This loop includes a switch case that checks what kind of 
+mouse or keyboard event took place and assigns degrees of angles accordingly for 
+the image to be moved. Also, it detects mouse clicks and prints "Don't tickle 
+me." For the image to move and rotate, my render function includes an input for 
+angle and also recalculates x and y position.
+
+
+What I've learned:
+I was able to achieve all the tasks I listed in my rubric. I think that 
+working through the tutorials was definitely a good start to getting going on 
+this project because graphics will be very important in my project. Moreover, 
+with the program I made, I show how I played around with the lessons from 
+tutorials to make something interesting. I think that making a makefile for 
+these programs is also very important step. I had a hard time understanding 
+how to compile and making sure that I was including everything I needed so 
+now that I made a makefile, this will be easier.
+I also made some progress with understanding and testing different ways to do 
+the coding and use SDL. At first I had downloaded the libraries and planned 
+working from my local computer. Then, I was advised to work on the student 
+computers so I shifted to that and did so by SSHing in. Later on, when I was 
+working on one of the rendering tutorials, I was having some trouble with 
+loading the graphics and worked with Luke Garrison to figure it out. In the 
+end, it seemed like there was some complications with running the programs by 
+SSHing so I moved onto working on the computers in Fitz. Since that poses 
+some limitations, I have been looking into how to do work from a virtual 
+machine. I have ubuntu set up on my Virtual Box and might be doing that from 
+now on.
+Last but not least, I have learned a lot about graphics, how SDL works, and 
+what kinds of features are feasible. I know that what I have done as of now 
+is pretty basic but I'm sure it is setting me in the right direction for this 
+project and I know that some important progress has been made.
+
+
+Link to bitbucket: 
+https://bitbucket.org/mariainesaranguren/cse20212-final-project
+
+
