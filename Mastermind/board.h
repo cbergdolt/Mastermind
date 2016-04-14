@@ -39,12 +39,15 @@ Board::Board()
     // Create grid with white pegs
     // (peg constructor = peg(color, spot, row)
     grid.reserve(numOfRows);
-    for (int i = 0; i < numOfRows; i++)
+    for (int i = 0; i < numOfRows; i++) 
+//  {
         for (int j = 0; j < rowSize; j++){
             // Push back peg in spot j, row i
             Peg myPeg("white", j, i);
             grid[i].push_back(myPeg);
         }
+// 	do we need another push back here, to put the row in the grid?
+//  }
 
     // Create Computer key
     // Randomize colors
