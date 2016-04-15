@@ -1,5 +1,5 @@
 // Final Project
-// Peg Class
+// Peg Class interface (see peg.cpp for implementation)
 // Maria, Carolyn, Maddie
 
 #ifndef PEG_H
@@ -23,39 +23,13 @@ class Peg
 
     private:
         string color;           // The color of the peg
-        int spot;               // Placement of the peg (e.g. 1, 2, 3, or 4)
+			//0=hole
+			//1=black
+			//2=red
+			//3=blue
+			//4=green
+        int spot;               // Placement/column of the peg (e.g. 1, 2, 3, or 4)
         int row;
 };
-
-Peg::Peg()
-{
-    color = "white";
-}
-
-Peg::Peg(string clr, int spt, int rw)
-{
-    color = clr;
-    spot = spt;
-    row = rw;
-}
-
-void Peg::setColor(string clr)
-{ color = clr; }
-
-void Peg::setSpot(int spt)
-{ spot = spt; }
-
-void Peg::setRow(int rw)
-{ row = rw; }
-
-string Peg::getColor()
-{ return color; }
-
-int Peg::getSpot()
-{ return spot; }
-
-int Peg::getRow()
-{ return row; }
-
 
 #endif

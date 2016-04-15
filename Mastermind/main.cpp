@@ -4,17 +4,44 @@
 
 #include <iostream>
 #include <vector>
+#include <SDL2/SDL.h>
+#include <string>
 #include "board.h"
-//#include "board_display.h"
+#include "display.h"
 
 using namespace std;
 
-int main()
-{
-	//initialize SDL stuff... 
-	//This probably ought to go in a class (constructor)...
-	//How will that work?  
-	//I think it should, but the details are still a little sketchy
-	//also, how to compile it???
-    Board myBoard;
+int main(int argc, char* args[]) { //these arguments are necessary for SDL
+
+	//instantiate Display object
+	Display display;
+	//instantiate Board object
+	Board board;
+	
+	int change; //returned from update, 1 for peg change, 0 for no change
+        if (!display.init() || !display.loadMedia()) return 0;
+        else {
+		//initial window graphics
+		display.update(0, 0, &board);
+		//set main loop flag
+		bool quit = false;
+		//Event handler
+		SDL_Event e;
+		//variables to hold x and y click coordinates
+		int x, y;
+		//while application is running
+		while (!quit) {
+			//handle events on queue
+			while(SDL_PollEvent (&e) != 0) {
+				//if the window x is clicked
+				if (e.type == SDL_QUIT) quit = true;
+				//if the mouse clicks anywhere on the window
+				else if (e.button.type == SDL_MOUSEBUTTONDOWN) {
+					x = e.button.x;
+					y = e.button.y;
+					display.update(x, y, &board);
+				}
+			}
+		}
+	}
 }
