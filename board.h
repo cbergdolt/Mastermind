@@ -48,7 +48,7 @@ Board::Board()
 
     // Create Computer key
     // Randomize colors
-    string colors[] = {"black", "red", "green", "blue"};
+    string colors[] = {"black", "red", "blue", "green", "yellow", "pink"};
     srand(unsigned (time(0)));
     // Add computer pegs to comp vector
     for (int k = 0; k < rowSize; k++){
