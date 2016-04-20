@@ -20,7 +20,7 @@ Board::Board()
     // (this can be changed once we know the dimensions of the screen)
     rowTop = 795;
     rowBot = rowTop+56; //Each peg is 56 pixels in diameter
-    currentRow = 9;
+    currentRow = 10;
     // Create grid with holes
     // (peg constructor = peg(color, spot, row)
     int i, j;
