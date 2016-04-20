@@ -10,8 +10,8 @@ using namespace std;
 
 //global variables
 //window dimensions
-const int WIDTH = 480;
-const int HEIGHT = 360;
+const int WIDTH = 700;
+const int HEIGHT = 900;
 
 //helper functions
 //create SDL window

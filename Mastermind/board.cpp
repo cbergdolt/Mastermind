@@ -1,31 +1,15 @@
 // Final Project
-// Board Class
-
-#ifndef BOARD_H
-#define BOARD_H
+// Board Class implementation (see board.h for interface)
 
 #include <iostream>
 #include <vector>
 #include "peg.h"
+#include "board.h"
 #include <vector>
 #include <ctime>        // For random # generator
 #include <cstdlib>
 
 using namespace std;
-
-class Board
-{
-    public:
-        Board();
-    
-    private:
-        vector<vector <Peg> > grid;     // Grid of all the pegs on the board    
-        vector<Peg> comp;        // The computer pegs (the winning key)
-        int rowTop;              // The y-coordinate of the top of selected row
-        int rowBot;              // The y-coordinate of the bottom of selected row
-        int rowSize;             // # of pegs in a row (possibly can be changed depending on difficulty)
-        int numOfRows;           // Number of rows, should always be 11
-};
 
 // Constructor
 Board::Board()
@@ -36,15 +20,17 @@ Board::Board()
     // (this can be changed once we know the dimensions of the screen)
     rowTop = 0; 
     rowBot = 0;
-    // Create grid with white pegs
+    // Create grid with holes
     // (peg constructor = peg(color, spot, row)
+    int i, j;
     grid.reserve(numOfRows);
-    for (int i = 0; i < numOfRows; i++)
-        for (int j = 0; j < rowSize; j++){
+    for (i = 0; i < numOfRows; i++) {
+        for (j = 0; j < rowSize; j++){
             // Push back peg in spot j, row i
-            Peg myPeg("white", j, i);
-            grid[i].push_back(myPeg);
+            Peg myPeg("hole", j, i);
+	    grid[i].push_back(myPeg);
         }
+    }
 
     // Create Computer key
     // Randomize colors
@@ -58,5 +44,3 @@ Board::Board()
 }
 
 
-
-#endif
