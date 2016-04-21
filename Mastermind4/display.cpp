@@ -29,6 +29,7 @@ Display::Display(){
 	//NULLize more colors if added
 	CURRENT = NULL;
         currentColor = "";
+        winner = 0;
 }
 
 //Deconstructor
@@ -106,17 +107,24 @@ void Display::update(int x, int y, Board *board) {
 //                rect.y=750;
 //                rect.w=160; //is there a way to get dimensions of the image?
 //                rect.h=90; // for future reference, anyway..
-                
+
                 // Check if all four pegs are full
                 bool valid = true;
                 for (int k = 0; k < 4; k++)
-                    if (board->grid[board->getCurrentRow()][k].getColor() == "hole") 
+                    if (board->grid[board->getCurrentRow()][k].getColor() == "hole"){ 
                         valid = false;          // Not all holes are full 
+                    }
 
                 if (valid) {    
                         // Check guess
                         board->checkKey();
                         board->nextRow();       // Changes current row to next row
+
+                        if (board->place_hint == 4){    // All pegs in correct spot, YOU WIN!!!!!
+                            // Display winning screen
+                            cout << "YOU WON!!!" << endl;
+                            winner = 1;    
+                        }
 
                         //Update rowTop and rowBot to update restrictions for the y-coordinate of the top and bottom of selected row
                         cout << "Check solution button was pressed. Variables rowTop and rowBot are being updated." << endl;
@@ -141,15 +149,14 @@ void Display::update(int x, int y, Board *board) {
                 SDL_RenderSetViewport(renderer, &rect);
                 //render texture of new peg to screen
                 SDL_RenderCopy(renderer, CURRENT, NULL, NULL);
-//                }
             }
         }
 
-    //Check if hit one of the holes. If so, assign corresponding grid box the current color.
+        //Check if hit one of the holes. If so, assign corresponding grid box the current color.
         int row, col, i, j;
         for (j=315; j<(WIDTH-50); j=j+90){ //x
             for (i=45; i<(HEIGHT-35); i=i+75) { //y
-                if (x >= j && x <= j+90 && y >= i && y <= i+90) {
+                if (x >= j && x <= j+90 && y >= i && y <= i+90) {       // Why is it i+90?
                     if (y<=board->rowBot && y>=board->rowTop) { //Check if in the correct row
                         row = (i-45)/90;
                         col = (j-315)/75;
@@ -365,4 +372,8 @@ SDL_Texture* Display::loadTexture(string path) {
         cout << "Loaded texture!" << endl;
 	}
 	return newTexture;
+}
+
+int Display::isWinner() {
+    return winner;
 }

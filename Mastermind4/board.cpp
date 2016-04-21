@@ -20,7 +20,7 @@ Board::Board()
     // (this can be changed once we know the dimensions of the screen)
     rowTop = 795;
     rowBot = rowTop+56; //Each peg is 56 pixels in diameter
-    currentRow = 10;
+    currentRow = 8;
     // Create grid with holes
     // (peg constructor = peg(color, spot, row)
     int i, j;
@@ -39,8 +39,9 @@ Board::Board()
     srand(unsigned (time(0)));
     // Add computer pegs to comp vector
     for (int k = 0; k < rowSize; k++){
-        Peg compPeg(colors[rand()%3], k, numOfRows + 1); 
+        Peg compPeg(colors[rand()%6], k, numOfRows + 1); 
         comp.push_back(compPeg);
+        cout << "computer peg: " << comp[k].getColor() << endl;
     }
 }
 
@@ -94,50 +95,22 @@ void Board::checkKey()
             place_hint++;       // player_pegs[i] is in correct position
     }
     
-    // Check for color matches
-    for (j = 0; j < num_of_pegs; j++) {
-        if (comp[j].getColor() == "black") {
-            comp_colors[0]++;
-        } else if (comp[j].getColor() == "red") {
-            comp_colors[1]++;
-        } else if (comp[j].getColor() == "blue") {
-            comp_colors[2]++;
-        } else if (comp[j].getColor() == "green") {
-            comp_colors[3]++;
-        } else if (comp[j].getColor() == "yellow") {
-            comp_colors[4]++;
-        } else if (comp[j].getColor() == "pink") {
-            comp_colors[5]++;
-        }
-             
-        if (grid[currentRow][j].getColor() == "black"){
-            player_colors[0]++;
-        } else if (grid[currentRow][j].getColor() == "red"){
-            player_colors[1]++;
-        } else if (grid[currentRow][j].getColor() == "blue"){
-            player_colors[2]++;
-        } else if (grid[currentRow][j].getColor() == "green"){
-            player_colors[3]++;
-        } else if (grid[currentRow][j].getColor() == "yellow") {
-            player_colors[4]++;
-        } else if (grid[currentRow][j].getColor() == "pink") {
-            player_colors[5]++;
-        }
-    }
-            
-    bool match = true;
-    for (k = 0; k < 4; k++) {
-        if (player_colors[k] - comp_colors[k] == -comp_colors[k])   // computer used a color that player did not use
-            match = false;
-        if (player_colors[k] - comp_colors[k] == player_colors[k])  // player used a color that computer did not use
-            match = false;
-        if (match){
-            if (player_colors[k] - comp_colors[k] < 0){             // color match, but player didn't use enough
-                color_hint += player_colors[k];
-            } else if (player_colors[k] - comp_colors[k] == 0){     // computer & player used same amount of color
-                color_hint += player_colors[k];
-            } else if (player_colors[k] = comp_colors[k] > 0){      // color match, but player used too much
-                color_hint += comp_colors[k];
+    vector <int> matches;
+    matches.push_back(99);
+    bool alreadyMatched = false;
+
+    for (j = 0; j < num_of_pegs; j++) { // Go through each player peg
+        for (k = 0; k < num_of_pegs; k++) {  // Go through each computer peg
+            if (grid[currentRow][j].getColor() == comp[k].getColor()){
+                for (vector<int>::iterator it = matches.begin(); it != matches.end(); ++it){
+                    if (k == *it)
+                        alreadyMatched = true;
+                }
+                if (!alreadyMatched){
+                    color_hint++;
+                    matches.push_back(k);       // add current computer peg to matches
+                }
+                alreadyMatched = false;
             }
         }
     }

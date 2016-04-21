@@ -24,7 +24,7 @@ class Display {
 		void update(int x, int y, Board *); 
 		bool init(); // creates SDL window
 		bool loadMedia(); //loads images
-
+                int isWinner();         // returns 1 if the player has won
 	private:
 		//helper functions
 		// VVV texture loader, helps loadMedia()
@@ -34,6 +34,7 @@ class Display {
 		//data members
 		int WIDTH;
 		int HEIGHT;
+                int winner;     // is set to 1 if the player wins
 //        int numGuesses;
                 SDL_Window* window; //window to render to
 		SDL_Renderer* renderer; //window renderer

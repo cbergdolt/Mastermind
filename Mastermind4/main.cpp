@@ -35,7 +35,8 @@ int main(int argc, char* args[]) { //these arguments are necessary for SDL
 			while(SDL_PollEvent (&e) != 0) {
 				//if the window x is clicked
 				if (e.type == SDL_QUIT) quit = true;
-				//if the mouse clicks anywhere on the window
+				if (display.isWinner()) quit = true;    // Exits window
+                                //if the mouse clicks anywhere on the window
 				else if (e.button.type == SDL_MOUSEBUTTONDOWN) {
 					x = e.button.x;
 					y = e.button.y;
