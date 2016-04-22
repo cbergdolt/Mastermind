@@ -34,8 +34,9 @@ int main(int argc, char* args[]) { //these arguments are necessary for SDL
 			//handle events on queue
 			while(SDL_PollEvent (&e) != 0) {
 				//if the window x is clicked
-				if (e.type == SDL_QUIT) quit = true;
-				if (display.isWinner()) quit = true;    // Exits window
+				if (e.type == SDL_QUIT) quit = true;	//set exit window status
+	//I don't know if we want isWinner here, since we are giving the user the opportunity to play again if they win
+//				if (board.isWinner()) quit = true;    // Exits window
                                 //if the mouse clicks anywhere on the window
 				else if (e.button.type == SDL_MOUSEBUTTONDOWN) {
 					x = e.button.x;

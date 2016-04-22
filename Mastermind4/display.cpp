@@ -29,7 +29,7 @@ Display::Display(){
 	//NULLize more colors if added
 	CURRENT = NULL;
         currentColor = "";
-        winner = 0;
+//        winner = 0;
 }
 
 //Deconstructor
@@ -72,115 +72,96 @@ Display::~Display() {
 void Display::update(int x, int y, Board *board) {
     
         //Current click
-        cout << endl << "NEW CLICK --> x: " << x << "y: " << y << endl;
-        cout << "board->rowTop: " << board->rowTop << endl;
-        cout << "board->rowBot: " << board->rowBot << endl;
-    
-        //Check what action was done in the last click
-        if (board->checkClick(x, y) != "noColorSelected") { //Color was selected
-            currentColor=board->checkClick(x, y); //Save color selected to currentColor
-            cout << "current: " << currentColor << endl;
-            if (currentColor=="black") {
-                CURRENT = BLACK;
-            }
-            else if (currentColor=="red") {
-                CURRENT = RED;
-            }
-            else if (currentColor=="blue") {
-                CURRENT = BLUE;
-            }
-            else if (currentColor=="green") {
-                CURRENT = GREEN;
-            }
-            else if (currentColor=="yellow") {
-                CURRENT = YELLOW;
-            }
-            else if (currentColor=="pink") {
-                CURRENT = PINK;
-            }
-        }
-        else {  //Peg was selected
-            //include some sort of if statement to restrict places where peg is being put
-            if (x >=25 && x<=25+160 && y>=750 && y<=750+90) {  //Check solution button was clicked
-                //From lines in which check button image is loaded
-//                rect.x=25;
-//                rect.y=750;
-//                rect.w=160; //is there a way to get dimensions of the image?
-//                rect.h=90; // for future reference, anyway..
+cout << endl << "NEW CLICK --> x: " << x << "y: " << y << endl;
+cout << "board->rowTop: " << board->rowTop << endl;
+cout << "board->rowBot: " << board->rowBot << endl;
 
-                // Check if all four pegs are full
-                bool valid = true;
-                for (int k = 0; k < 4; k++)
-                    if (board->grid[board->getCurrentRow()][k].getColor() == "hole"){ 
-                        valid = false;          // Not all holes are full 
-                    }
+	//WE have the click. WE need to check if it is 
+	// 1: the check soln button
+	// 2: on one of the pegs in the peg pool
+	// 3: in the "active" row (as defined by rowTop and row
 
-                if (valid) {    
-                        // Check guess
-                        board->checkKey();
-                        board->nextRow();       // Changes current row to next row
-
-                        if (board->place_hint == 4){    // All pegs in correct spot, YOU WIN!!!!!
-                            // Display winning screen
-                            cout << "YOU WON!!!" << endl;
-                            winner = 1;    
-                        }
-
-                        //Update rowTop and rowBot to update restrictions for the y-coordinate of the top and bottom of selected row
-                        cout << "Check solution button was pressed. Variables rowTop and rowBot are being updated." << endl;
-                        cout << "board->rowTop: " << board->rowTop << endl;
-                        cout << "board->rowBot: " << board->rowBot << endl;
-                        board->rowTop=board->rowTop-75;
-                        board->rowBot=board->rowBot-75;
-                    
+	//Was the click on the check solution button?
+	if(x>=25 && x<=185 && y>=750 && y<=840) {
+		bool valid = board->checkSoln();
+		if (valid) {
+			board->checkKey();
+			if (board->place_hint == 4) {
+				cout << "YOU WON!!!!" << endl; //win message/screen
+			}
+		}
+cout << "Check solution button was pressed. Variables rowTop and rowBot are being updated." << endl;
+cout << "board->rowTop: " << board->rowTop << endl;
+cout << "board->rowBot: " << board->rowBot << endl;
+                   
                         // print number of place hints (board->place_hint)
                         cout << "Number of pegs in the correct place: " << board->place_hint << endl;
                         // print number of color hints (board->color_hint)
                         cout << "Number of pegs with the correct color: " << board->color_hint << endl;
-                }
-            } else {  //Peg was selected
-                //Place pegs (block of code below checks to make sure they are only assigned if they are placed in the right row)
-                //set viewport
-                SDL_Rect rect;
-                rect.x=x;
-                rect.y=y;
-                rect.w=56; //is there a way to get dimensions of the image?
-                rect.h=56; // for future reference, anyway...
-                SDL_RenderSetViewport(renderer, &rect);
-                //render texture of new peg to screen
-                SDL_RenderCopy(renderer, CURRENT, NULL, NULL);
-            }
-        }
+	}
+	//Was the click on one of the pegs in the peg pool?
+	else if(x>=210 && x<=266 && y>=425 && y<= HEIGHT) {
+		currentColor = board->changeColor(y); //current color as a string
+		newCurrCol(currentColor); //set CURRENT to the appropriate texture
+	}
+	//Was the click on the active row?
+	else if(y>=board->rowTop && y<=board->rowBot && x>=200 && x<=WIDTH) {
+		board->newPegColor(x, currentColor); //get column of clicked peg
+	}
 
-        //Check if hit one of the holes. If so, assign corresponding grid box the current color.
-        int row, col, i, j;
-        for (j=315; j<(WIDTH-50); j=j+90){ //x
-            for (i=45; i<(HEIGHT-35); i=i+75) { //y
-                if (x >= j && x <= j+90 && y >= i && y <= i+90) {       // Why is it i+90?
-                    if (y<=board->rowBot && y>=board->rowTop) { //Check if in the correct row
-                        row = (i-45)/90;
-                        col = (j-315)/75;
-                        cout << "row: " << row << " column: " << col << endl;
-                    
-                        board->grid[row][col].color=currentColor; //Assign the peg the corresponding color
-                        cout << "Assigned color!" << endl;
-                        break;
-                    }
-                }
-            }
-        }
-    
-	//check clickability of location...
-	//  if not clickable, return;
-	//
-	//if (CURRENT == NULL ) {
-		//set current to the color clicked
-		//check to make sure a color location was actually clicked
+	drawBasics(); //draw background stuff
+	drawPegPool(); //draw pegs to chose from (next to board)
+
+	//draw pegs/holes on board
+	int i, j, row, col;
+	SDL_Rect rect;
+	string color;
+	for (j=315; j<(WIDTH-50); j=j+90){ // x coordinate start at 315 pixels and repeat every 90 pixels
+	    for (i=45; i<(HEIGHT-35); i=i+75) { // y coord start at 45 pixels and repeats every 75 pixels
+		rect.x = j;
+		rect.y = i;
+		rect.w = 56;
+		rect.h = 56;
+		SDL_RenderSetViewport(renderer, &rect);
+		row = (i-45)/75;
+		col = (j-315)/90;
+//		SDL_RenderCopy(renderer, CURRENT, NULL, NULL);
+		color = board->grid[row][col].getColor();
+                       if (color == "hole") {
+                           SDL_RenderCopy(renderer, HOLE, NULL, NULL);
+                       }
+                       else if (color == "black") {
+                           SDL_RenderCopy(renderer, BLACK, NULL, NULL);
+                       }
+                       else if (color == "red") {
+                           SDL_RenderCopy(renderer, RED, NULL, NULL);
+                       }
+                       else if (color == "blue") {
+                           SDL_RenderCopy(renderer, BLUE, NULL, NULL);
+                       }
+                       else if (color == "green") {
+                           SDL_RenderCopy(renderer, GREEN, NULL, NULL);
+                       }
+                       else if (color == "yellow") {
+                           SDL_RenderCopy(renderer, YELLOW, NULL, NULL);
+                       }
+                       else if (color == "pink") {
+                           SDL_RenderCopy(renderer, PINK, NULL, NULL);
+                       }
+                       else {
+			   SDL_RenderCopy(renderer, HOLE, NULL, NULL);
+                       }
+	    }
+	}
+
+		//update screen
+		SDL_RenderPresent (renderer);
 	//}
-    
-	//else {
-        //*redraw green background, mastermind logo, and main board*
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); //green, opaque
+}
+
+void Display::drawBasics() {
+        //*redraw white background, mastermind logo, and main board*
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); //white, opaque
         SDL_RenderClear(renderer);
         //set viewport
         SDL_Rect rect;
@@ -189,7 +170,7 @@ void Display::update(int x, int y, Board *board) {
         rect.w=450; //is there a way to get dimensions of the image?
         rect.h=900; // for future reference, anyway...
         SDL_RenderSetViewport(renderer, &rect);
-        //render texture to screen
+        //render main board to screen
         SDL_RenderCopy(renderer, BOARD, NULL, NULL);
         //set viewport
         //SDL_Rect rect;
@@ -198,7 +179,7 @@ void Display::update(int x, int y, Board *board) {
         rect.w=260; //is there a way to get dimensions of the image?
         rect.h=160; // for future reference, anyway...
         SDL_RenderSetViewport(renderer, &rect);
-        //render texture to screen
+        //render Mastermind title to screen
         SDL_RenderCopy(renderer, MASTERMIND, NULL, NULL);
         //set viewport
         //SDL_Rect rect;
@@ -207,11 +188,12 @@ void Display::update(int x, int y, Board *board) {
         rect.w=160; //is there a way to get dimensions of the image?
         rect.h=90; // for future reference, anyway...
         SDL_RenderSetViewport(renderer, &rect);
-        //render texture to screen
+        //render check solution button to screen
         SDL_RenderCopy(renderer, SOLUTION, NULL, NULL);
-    
+}
 
-		//*draw color selection pegs (any other "side" features?)*
+void Display::drawPegPool() {
+	//*draw color selection pegs (any other "side" features?)*
         //set viewport
         SDL_Rect pegRect;
         int num;
@@ -241,54 +223,15 @@ void Display::update(int x, int y, Board *board) {
                 SDL_RenderCopy(renderer, PINK, NULL, NULL);
             }
         }
+}
 
-		//draw pegs/holes on board
-//		int i, j, row
-//        int col;
-		string color;
-		for (j=315; j<(WIDTH-50); j=j+90){
-		    for (i=45; i<(HEIGHT-35); i=i+75) {
-			rect.x = j;
-			rect.y = i;
-			rect.w = 56;
-			rect.h = 56;
-			SDL_RenderSetViewport(renderer, &rect);
-			row = (i-45)/90;
-			col = (j-315)/75;
-			color = board->grid[row][col].getColor();
-                        if (color == "hole") {
-                            SDL_RenderCopy(renderer, HOLE, NULL, NULL);
-                        }
-                        else if (color == "black") {
-                            SDL_RenderCopy(renderer, BLACK, NULL, NULL);
-                        }
-                        else if (color == "red") {
-                            SDL_RenderCopy(renderer, RED, NULL, NULL);
-                        }
-                        else if (color == "blue") {
-                            SDL_RenderCopy(renderer, BLUE, NULL, NULL);
-                        }
-                        else if (color == "green") {
-                            SDL_RenderCopy(renderer, GREEN, NULL, NULL);
-                        }
-                        else if (color == "yellow") {
-                            SDL_RenderCopy(renderer, YELLOW, NULL, NULL);
-                        }
-                        else if (color == "pink") {
-                            SDL_RenderCopy(renderer, PINK, NULL, NULL);
-                        }
-                        else {
-                            cout << "Ahhhh!  We have a problem!" << endl;
-                            cout << "row: " << row << endl;
-                            cout << "column: " << col << endl;
-                            cout << "color: " << color << endl;
-                        }
-		    }
-		}
-
-		//update screen
-		SDL_RenderPresent (renderer);
-	//}
+void Display::newCurrCol(string color) {
+	if (color=="black") CURRENT = BLACK;
+	else if (color=="red") CURRENT = RED;
+	else if (color=="blue")CURRENT = BLUE;
+	else if (color=="green") CURRENT = GREEN;
+	else if (color=="yellow") CURRENT = YELLOW;
+	else if (color=="pink") CURRENT = PINK;
 }
 
 //initialize window
@@ -372,8 +315,4 @@ SDL_Texture* Display::loadTexture(string path) {
         cout << "Loaded texture!" << endl;
 	}
 	return newTexture;
-}
-
-int Display::isWinner() {
-    return winner;
 }

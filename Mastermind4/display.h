@@ -24,18 +24,20 @@ class Display {
 		void update(int x, int y, Board *); 
 		bool init(); // creates SDL window
 		bool loadMedia(); //loads images
-                int isWinner();         // returns 1 if the player has won
+
 	private:
 		//helper functions
 		// VVV texture loader, helps loadMedia()
-                string currentColor;
 		SDL_Texture* loadTexture (string path);
-
+		void drawPegPool(); // draws selection pegs to the side of the board
+		void drawBasics(); //draws board, BG, check soln button and Mastermind title
+		void newCurrCol(string); //sets the CURRENT texture based on input color string
+		
 		//data members
+                string currentColor;
 		int WIDTH;
 		int HEIGHT;
-                int winner;     // is set to 1 if the player wins
-//        int numGuesses;
+
                 SDL_Window* window; //window to render to
 		SDL_Renderer* renderer; //window renderer
 		//pointers to the textures that will be loaded from the images
