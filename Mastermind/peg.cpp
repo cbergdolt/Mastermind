@@ -10,6 +10,7 @@ using namespace std;
 
 Peg::Peg()
 {
+    //set default peg type to hole since no pegs have been assigned
     color = "hole";
 
 }

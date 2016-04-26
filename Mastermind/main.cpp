@@ -11,14 +11,13 @@
 
 using namespace std;
 
-int main(int argc, char* args[]) { //these arguments are necessary for SDL
+int main(int argc, char* args[]) {
 
 	//instantiate Display object
 	Display display;
 	//instantiate Board object
 	Board board;
-	
-	int change; //returned from update, 1 for peg change, 0 for no change
+
         if (!display.init() || !display.loadMedia()) return 0;
         else {
 		//initial window graphics
@@ -34,8 +33,16 @@ int main(int argc, char* args[]) { //these arguments are necessary for SDL
 			//handle events on queue
 			while(SDL_PollEvent (&e) != 0) {
 				//if the window x is clicked
-				if (e.type == SDL_QUIT) quit = true;
-				//if the mouse clicks anywhere on the window
+				if (e.type == SDL_QUIT) quit = true;	//set exit window status
+				if (board.isWinner()){
+                                    display.drawWin();
+                                    board.resetBoard();
+                                }
+                                if (display.youLost()){
+                                    board.resetBoard();
+                                    display.update(0, 0, &board);
+                                }
+                                //if the mouse clicks anywhere on the window
 				else if (e.button.type == SDL_MOUSEBUTTONDOWN) {
 					x = e.button.x;
 					y = e.button.y;

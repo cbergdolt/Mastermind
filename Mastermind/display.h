@@ -14,36 +14,55 @@
 using namespace std;
 
 class Display {
-//	friend class Board;
 
 	public:
 		Display(); //Constructor
 		~Display(); //Deconstructor
 		// VVV draws new things to the display based on x and y 
 		//coordinates of click (passed from the driver)
-		void update(int x, int y, Board *); 
+                void initialShow();
+		void update(int x, int y, Board *board);
 		bool init(); // creates SDL window
 		bool loadMedia(); //loads images
-
+                void drawWin(); // draws screen if you win the game
+                void drawLose();  // draws screen if you lose the game
+                bool youLost(); // tells main whether the player lost so the board can be reset
 	private:
 		//helper functions
 		// VVV texture loader, helps loadMedia()
 		SDL_Texture* loadTexture (string path);
-
+		void drawHints(int, int, Board *); //draws the hint pegs into the board
+		void drawPegs(Board *); //draws pegs that are currently in the board (and the holes)
+		void drawPegPool(); // draws selection pegs to the side of the board
+		void drawBasics(); //draws board, BG, check soln button and Mastermind title
+		void newCurrCol(string); //sets the CURRENT texture based on input color string
+	        void drawInstructions();
 		//data members
+                string currentColor;
 		int WIDTH;
 		int HEIGHT;
-		SDL_Window* window; //window to render to
+                bool isLoser;
+
+                SDL_Window* window; //window to render to
 		SDL_Renderer* renderer; //window renderer
 		//pointers to the textures that will be loaded from the images
-		SDL_Texture* BOARD; 
+		SDL_Texture* BOARD;
+                SDL_Texture* WELCOME;
+                SDL_Texture* MASTERMIND;
+                SDL_Texture* SOLUTION;
 		SDL_Texture* HOLE;
 		SDL_Texture* BLACK;
 		SDL_Texture* RED;
 		SDL_Texture* BLUE;
 		SDL_Texture* GREEN;
+                SDL_Texture* YELLOW;
+                SDL_Texture* PINK;
+		SDL_Texture* WHITE;
 		SDL_Texture* CURRENT; //pointer to current texture
-		
+		SDL_Texture* WIN;
+		SDL_Texture* LOSE;
+	        SDL_Texture* INSTRUCTIONS;
+                SDL_Texture* INST_BUTTON;        
 };
 
 #endif	
