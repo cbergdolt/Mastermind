@@ -16,11 +16,10 @@ Board::Board()
 {
     rowSize = 4;
     numOfRows = 11;
-    // Set "active row" to 0, meaning no space can be clicked yet
-    // (this can be changed once we know the dimensions of the screen)
     rowTop = 790;
     rowBot = rowTop+75; //Each peg is 75 pixels vertically from the next peg
     currentRow = 10; //first active row
+    winner = false;   
 
     // Create grid with holes
     // (peg constructor = peg(color, spot, row)
@@ -46,18 +45,42 @@ Board::Board()
         comp.push_back(compPeg);
         cout << "computer peg: " << comp[k].getColor() << endl;
     }
+
+
 }
 
+void Board::resetBoard()
+{
+    rowTop = 790;
+    rowBot = rowTop+75;
+    currentRow = 10;
+    winner = false;
+
+    // Clear all pegs from board
+    int i, j;
+    for (i = 0; i < numOfRows; i++) {
+        for (j = 0; j < rowSize; j++) {
+            grid[i][j].setColor("hole");
+            hints[i][j].setColor("hole");
+        }
+    }
+
+    // Create new computer key
+    string colors[] = {"black", "red", "blue", "green", "yellow", "pink" }; //ADD OTHER COLORS????
+    srand(unsigned (time(0)));
+    // Add computer pegs to comp vector
+    for (int k = 0; k < rowSize; k++){
+        Peg compPeg(colors[rand()%6], k, numOfRows + 1); 
+        comp[k].setColor(colors[rand()%6]);
+        cout << "computer peg: " << comp[k].getColor() << endl;
+    }
+}
 
 void Board::nextRow()
 {
-	cout << "currentRow: " << currentRow << endl;
-
-	currentRow--; // "activate" next row
-	rowTop = rowTop-75; // move row pixel bounds
-	rowBot = rowBot-75;
-
-	cout << "currentRow: " << currentRow << endl;
+    currentRow--; // "activate" next row
+    rowTop = rowTop-75; // move row pixel bounds
+    rowBot = rowBot-75;
 }
 
 void Board::checkKey()
@@ -122,7 +145,6 @@ string Board::changeColor(int y) {
 	else if (y <=640 && y >= 565) color = "green";
 	else if (y <=565 && y >= 490) color = "yellow";
 	else if (y <=490 && y >= 415) color = "pink";
-	cout << "Current color is now: " << color << endl;
     
 	return color;
 }
@@ -139,4 +161,14 @@ void Board::newPegColor(int x, string color) {
 int Board::getCurrentRow()
 {
     return currentRow;
-}       
+}
+
+bool Board::isWinner()
+{
+    return winner;
+}
+
+void Board::setWinner(bool w)
+{
+    winner = w;
+}

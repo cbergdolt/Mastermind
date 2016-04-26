@@ -29,9 +29,11 @@ Display::Display(){
         SOLUTION = NULL;
 	WIN = NULL;
 	LOSE = NULL;
-	//NULLize more colors if added
 	CURRENT = NULL;
+        INSTRUCTIONS = NULL;
+        INST_BUTTON = NULL;
         currentColor = "";
+        isLoser = false;
 }
 
 //Deconstructor
@@ -65,6 +67,10 @@ Display::~Display() {
 	WIN = NULL;
 	SDL_DestroyTexture(LOSE);
 	LOSE = NULL;
+        SDL_DestroyTexture(INSTRUCTIONS);
+        INSTRUCTIONS = NULL;
+        SDL_DestroyTexture(INST_BUTTON);
+        INST_BUTTON = NULL;
 
 	//destory renderer
 	SDL_DestroyRenderer(renderer);
@@ -78,10 +84,9 @@ Display::~Display() {
 	SDL_Quit();
 }
 
+/*
 //initial screen
 void Display::initialShow() {
-    
-    cout << "First screen" << endl;
     
     drawBasics(); //draw background stuff
     drawPegPool(); //draw pegs to chose from (next to board)
@@ -96,22 +101,18 @@ void Display::initialShow() {
     SDL_RenderCopy(renderer, WELCOME, NULL, NULL);
     
 //    SDL_RenderPresent (renderer);
-    
     //Was the click on the start button?
     if(x>=25 && x<=185 && y>=750 && y<=840) { //CHANGE THESE #s
         
     }
-    
-
 }
+*/
 
 //update screen (based on click)
 void Display::update(int x, int y, Board *board) {
     
         //Current click
-cout << endl << "NEW CLICK --> x: " << x << "y: " << y << endl;
-cout << "board->rowTop: " << board->rowTop << endl;
-cout << "board->rowBot: " << board->rowBot << endl;
+        cout << endl << "NEW CLICK --> x: " << x << "y: " << y << endl;
 
 	//We have the click. We need to check if it is 
 	// 1: the check soln button
@@ -123,24 +124,22 @@ cout << "board->rowBot: " << board->rowBot << endl;
 		bool valid = board->checkSoln();
 		if (valid) {
 			board->checkKey();
-			if (board->place_hint == 4) {
-				cout << "YOU WON!!!!" << endl; //win message/screen
-			}
+			if (board->place_hint == 4) {   // All 4 pegs in right spot
+                            board->setWinner(true);
+			} else if (board->getCurrentRow() < 0) {
+                            drawLose();
+                        }
 		}
-cout << "Check solution button was pressed. Variables rowTop and rowBot are being updated." << endl;
-cout << "board->rowTop: " << board->rowTop << endl;
-cout << "board->rowBot: " << board->rowBot << endl;
-                   
-        // print number of place hints (board->place_hint)
-        cout << "Number of pegs in the correct place: " << board->place_hint << endl;
-        // print number of color hints (board->color_hint)
-        cout << "Number of pegs with the correct color: " << board->color_hint << endl;
-
 	}
-	//Was the click on one of the pegs in the peg pool?
+
+        //Was the click on the instructions button?
+        if(x>=15 && x<=195 && y>=600 && y<=700) {
+            drawInstructions();
+        }
+	
+        //Was the click on one of the pegs in the peg pool?
 	else if(x>=210 && x<=266 && y>=425 && y<= HEIGHT) {
 		currentColor = board->changeColor(y); //current color as a string
-cout << "color changed!" << endl;
 		newCurrCol(currentColor); //set CURRENT to the appropriate texture
 	}
 	//Was the click on the active row?
@@ -151,8 +150,8 @@ cout << "color changed!" << endl;
 	drawBasics(); //draw background stuff
 	drawPegPool(); //draw pegs to chose from (next to board)
 	drawPegs(board); //draw pegs (and hints) on board 
-
-	//update screen
+	
+        //update screen
 	SDL_RenderPresent (renderer);
 }
 
@@ -162,13 +161,13 @@ void Display::drawBasics() {
 	//white screen
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); //white, opaque
         SDL_RenderClear(renderer);
-
+       
         //set viewport for board
         SDL_Rect rect;
         rect.x=WIDTH-550; 
         rect.y=0;
-        rect.w=550; //is there a way to get dimensions of the image?
-        rect.h=900; // for future reference, anyway...
+        rect.w=550; 
+        rect.h=900; 
         SDL_RenderSetViewport(renderer, &rect);
         //render main board to screen
         SDL_RenderCopy(renderer, BOARD, NULL, NULL);
@@ -176,17 +175,25 @@ void Display::drawBasics() {
         //set viewport for Mastermind logo
         rect.x=10;
         rect.y=30;
-        rect.w=260; //is there a way to get dimensions of the image?
-        rect.h=285; // for future reference, anyway...
+        rect.w=260; 
+        rect.h=285; 
         SDL_RenderSetViewport(renderer, &rect);
         //render Mastermind title to screen
         SDL_RenderCopy(renderer, MASTERMIND, NULL, NULL);
 
+        //set viewport for instructions button
+        rect.x=15;
+        rect.y=600;
+        rect.w=180;
+        rect.h=100;
+        SDL_RenderSetViewport(renderer, &rect);
+        SDL_RenderCopy(renderer, INST_BUTTON, NULL, NULL);
+
         //set viewport for solution button
         rect.x=15;
         rect.y=750;
-        rect.w=180; //is there a way to get dimensions of the image?
-        rect.h=100; // for future reference, anyway...
+        rect.w=180; 
+        rect.h=100; 
         SDL_RenderSetViewport(renderer, &rect);
         //render check solution button to screen
         SDL_RenderCopy(renderer, SOLUTION, NULL, NULL);
@@ -254,7 +261,6 @@ void Display::drawPegs(Board *board) {
 }
 
 void Display::drawHints(int y, int row, Board *board) {
-	cout << "Hints!" << endl;
 	int i, col = 0, j=y;
 	SDL_Rect rect;
 	string color;
@@ -283,6 +289,90 @@ void Display::drawHints(int y, int row, Board *board) {
 		col++; //next column of hints
 
 	}
+}
+
+void Display::drawInstructions() {
+    // white screen   
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); //white, opaque
+    SDL_RenderClear(renderer);
+
+    SDL_Rect rect;
+    SDL_Event e;
+    int x, y;
+    bool quit = false;
+    rect.x = 0;
+    rect.y = 0;
+    rect.w = 800;
+    rect.h = 900;
+
+    // load instruction screen
+    SDL_RenderSetViewport(renderer, &rect);
+    SDL_RenderCopy(renderer, INSTRUCTIONS, NULL, NULL);
+    SDL_RenderPresent(renderer);
+    
+    while (!quit) {
+        while (SDL_PollEvent(&e)!=0) {
+            if (e.button.type == SDL_MOUSEBUTTONDOWN){
+                x = e.button.x;
+                y = e.button.y;
+            }
+            // Was "back" button clicked?
+            if (x>=50 && x<=150 && y>=800 && y<=850){
+                quit = true;
+            }
+        }
+    }
+}
+
+void Display::drawWin()
+{
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); //white, opaque
+    SDL_RenderClear(renderer);
+
+    SDL_Rect rect;
+    rect.x = 0;
+    rect.y = 0;
+    rect.w = 800;
+    rect.h = 900;
+
+    // load winning screen
+    SDL_RenderSetViewport(renderer, &rect);
+    SDL_RenderCopy(renderer, WIN, NULL, NULL);
+    SDL_RenderPresent(renderer);
+
+}
+
+void Display::drawLose(){
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); //white, opaque
+    SDL_RenderClear(renderer);
+
+    SDL_Rect rect;
+    SDL_Event e;
+    rect.x = 0;
+    rect.y = 0;
+    rect.w = 800;
+    rect.h = 900;
+
+    // load winning screen
+    SDL_RenderSetViewport(renderer, &rect);
+    SDL_RenderCopy(renderer, LOSE, NULL, NULL);
+    SDL_RenderPresent(renderer);
+
+    bool quit = false;
+    while (!quit) {
+        while (SDL_PollEvent (&e) != 0) {
+            if (e.button.type == SDL_MOUSEBUTTONDOWN){
+                quit = true;
+            }
+        }
+    }
+    isLoser = true;
+}
+
+bool Display::youLost(){
+    bool returnLoser = isLoser;
+    isLoser = false;    // set back to false so that game resets
+    return returnLoser;
 }
 
 //Idk if this function (or CURRENT in general) is necessary.  Is it used anywhere?
@@ -353,6 +443,8 @@ bool Display::loadMedia() {
 	SOLUTION = loadTexture("images/check-solution.png");
 	WIN = loadTexture("images/winScreen1.png"); //or winnerScreen2.png
 	LOSE = loadTexture("images/loserScreen.png");
+        INSTRUCTIONS = loadTexture("images/instructions.png");
+        INST_BUTTON = loadTexture("images/inst_button.png");
 
 	return success;
 }
@@ -377,7 +469,6 @@ SDL_Texture* Display::loadTexture(string path) {
 		//Free old loaded surface
 		SDL_FreeSurface(loadedSurface);
         
-        cout << "Loaded texture!" << endl;
 	}
 	return newTexture;
 }

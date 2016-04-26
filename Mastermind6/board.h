@@ -26,7 +26,10 @@ class Board {
 	bool checkSoln();	// Ensures that the row is full before checkKey() is called
 	string changeColor(int y); //determines color clicked on height of click
 	void newPegColor(int x, string color);	//determines peg column based on x coord of click
-    
+        bool isWinner();
+        void setWinner(bool w);
+        void resetBoard();           // Resets board
+
     private:
         string checkClick(int x, int y);	//Check click. Store CURRENT if color was clicked. 
 						//Change color attribute of peg if a hole was selected.
@@ -40,6 +43,7 @@ class Board {
         int place_hint;          // Number of pegs that are the correct color and spot
         int color_hint;          // Number of pegs that match colors with the computer's sequencie
         int currentRow;          // Row that the user is currently on (the "active" row)
+        int winner;              // Set to 1 if user has won the game
 };
 
 #endif

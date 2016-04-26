@@ -22,7 +22,7 @@ class Peg
         string getColor();
         int getSpot();
         int getRow();
-
+        
     private:
         string color;           // The color of the peg
 			//0=hole

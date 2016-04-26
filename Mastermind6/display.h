@@ -25,7 +25,9 @@ class Display {
 		void update(int x, int y, Board *board);
 		bool init(); // creates SDL window
 		bool loadMedia(); //loads images
-
+                void drawWin(); // draws screen if you win the game
+                void drawLose();  // draws screen if you lose the game
+                bool youLost(); // tells main whether the player lost so the board can be reset
 	private:
 		//helper functions
 		// VVV texture loader, helps loadMedia()
@@ -35,11 +37,12 @@ class Display {
 		void drawPegPool(); // draws selection pegs to the side of the board
 		void drawBasics(); //draws board, BG, check soln button and Mastermind title
 		void newCurrCol(string); //sets the CURRENT texture based on input color string
-		
+	        void drawInstructions();
 		//data members
                 string currentColor;
 		int WIDTH;
 		int HEIGHT;
+                bool isLoser;
 
                 SDL_Window* window; //window to render to
 		SDL_Renderer* renderer; //window renderer
@@ -59,7 +62,8 @@ class Display {
 		SDL_Texture* CURRENT; //pointer to current texture
 		SDL_Texture* WIN;
 		SDL_Texture* LOSE;
-		
+	        SDL_Texture* INSTRUCTIONS;
+                SDL_Texture* INST_BUTTON;        
 };
 
 #endif	
