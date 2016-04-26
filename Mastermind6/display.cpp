@@ -173,17 +173,17 @@ void Display::drawBasics() {
         SDL_RenderCopy(renderer, BOARD, NULL, NULL);
 
         //set viewport for Mastermind logo
-        rect.x=10;
-        rect.y=30;
-        rect.w=260; 
-        rect.h=285; 
+        rect.x=13;
+        rect.y=40;
+        rect.w=255;
+        rect.h=140;
         SDL_RenderSetViewport(renderer, &rect);
         //render Mastermind title to screen
         SDL_RenderCopy(renderer, MASTERMIND, NULL, NULL);
 
         //set viewport for instructions button
         rect.x=15;
-        rect.y=600;
+        rect.y=625;
         rect.w=180;
         rect.h=100;
         SDL_RenderSetViewport(renderer, &rect);
